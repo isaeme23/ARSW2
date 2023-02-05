@@ -19,7 +19,7 @@ public class Control extends Thread {
     
     private final static int NTHREADS = 3;
     private final static int MAXVALUE = 300000;
-    private final static int TMILISECONDS = 10000;
+    private final static int TMILISECONDS = 10;
 
     private List<Integer> primes = new ArrayList<>();
 
@@ -57,29 +57,46 @@ public class Control extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < NTHREADS; i++) {
-            pft[i].start();
-        }
+        startThreads();
 
         while(pft[pft.length-1].isAlive()) {
             timeout();
-            for (int i = 0; i < NTHREADS; i++) {
-                pft[i].stopThread(true);
-            }
-            System.out.println(primes);
-            Collections.sort(primes);
-            System.out.println(primes);
-            System.out.println();
+            stopThreads();
+            showPrimes();
 
-            Scanner sc = new Scanner(System.in);
-            String entrada = sc.nextLine();
+            String entrada = scannEnter();
             if (entrada.equals("")) {
-                for (int i = 0; i < NTHREADS; i++) {
-                    pft[i].restartThread();
-                }
+                restartThreads();
             }
         }
-        System.out.println("Se acabo");
+    }
+
+    public void startThreads(){
+        for (int i = 0; i < NTHREADS; i++) {
+            pft[i].start();
+        }
+    }
+
+    public void stopThreads(){
+        for (int i = 0; i < NTHREADS; i++) {
+            pft[i].stopThread(true);
+        }
+    }
+
+    public void showPrimes(){
+        System.out.println(primes);
+        System.out.println();
+    }
+
+    public String scannEnter(){
+        Scanner sc = new Scanner(System.in);
+        return sc.nextLine();
+    }
+
+    public void restartThreads(){
+        for (int i = 0; i < NTHREADS; i++) {
+            pft[i].restartThread();
+        }
     }
     
 }
