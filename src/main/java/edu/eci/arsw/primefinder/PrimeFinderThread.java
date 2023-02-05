@@ -8,6 +8,8 @@ public class PrimeFinderThread extends Thread{
 
 	private List<Integer> primes;
 
+	private boolean waiting;
+
 	public PrimeFinderThread(int a, int b, List<Integer> primes) {
 		super();
                 this.primes = primes;
@@ -22,6 +24,15 @@ public class PrimeFinderThread extends Thread{
                     primes.add(i);
                     //System.out.println(i);
                 }
+				synchronized (this){
+					while(waiting){
+						try {
+							this.wait();
+						} catch (InterruptedException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
             }
 	}
 	
@@ -40,5 +51,14 @@ public class PrimeFinderThread extends Thread{
 
 	public synchronized List<Integer> getPrimes() {
 		return primes;
+	}
+
+	public void stopThread(boolean waiting){
+		this.waiting = waiting;
+	}
+
+	synchronized void restartThread(){
+		waiting = false;
+		notify();
 	}
 }

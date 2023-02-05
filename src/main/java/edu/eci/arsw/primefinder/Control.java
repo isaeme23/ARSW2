@@ -5,8 +5,11 @@
  */
 package edu.eci.arsw.primefinder;
 
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 
 /**
  *
@@ -14,7 +17,7 @@ import java.util.List;
 public class Control extends Thread {
     
     private final static int NTHREADS = 3;
-    private final static int MAXVALUE = 3000;
+    private final static int MAXVALUE = 3000000;
     private final static int TMILISECONDS = 10000;
 
     private List<Integer> primes = new ArrayList<>();
@@ -52,20 +55,28 @@ public class Control extends Thread {
     }
 
     @Override
-    public void run(){
-        for(int i = 0;i < NTHREADS;i++ ) {
+    public void run() {
+        for (int i = 0; i < NTHREADS; i++) {
             pft[i].start();
         }
+
         timeout();
-        try {
-            synchronized (pft[1].getPrimes()) {
-                System.out.println(pft[1].getPrimes());
-                pft[1].getPrimes().wait();
-                pft[1].getPrimes().notifyAll();
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+        for (int i = 0; i < NTHREADS; i++) {
+            pft[i].stopThread(true);
         }
+
+        System.out.println(primes);
+        System.out.println();
+
+        Scanner sc = new Scanner(System.in);
+        String entrada = sc.nextLine();
+        if (entrada.equals("")) {
+            for (int i = 0; i < NTHREADS; i++) {
+                pft[i].restartThread();
+            }
+        }
+
     }
     
 }
